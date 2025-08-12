@@ -380,9 +380,7 @@ function Education() {
 import {FileText} from "lucide-react";
 
 function Contact() {
-  const [emailLocal, setEmailLocal] = useState("");
-  const [emailDomain, setEmailDomain] = useState("@gmail.com");
-  const [customDomain, setCustomDomain] = useState("");
+  const [email, setEmail] = useState("");
 
   function handleQuickEmailClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
@@ -400,22 +398,12 @@ function Contact() {
     }
   }
 
-  // normalize custom domain if chosen (strip leading @ and spaces)
-  const normalizedCustom = customDomain.replace(/^@+/, "").trim();
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Assemble full email from local + selected domain
-    const local = emailLocal.trim();
-    const finalEmail =
-      emailDomain === "custom"
-        ? `${local}@${normalizedCustom}`
-        : `${local}${emailDomain}`;
-
-    formData.set("email", finalEmail);
+    formData.set("email", email.trim());
     const data = Object.fromEntries(formData.entries());
 
     try {
@@ -428,9 +416,7 @@ function Contact() {
       if (res.ok) {
         alert("Thanks! Your message is on its way.");
         form.reset();
-        setEmailLocal("");
-        setCustomDomain("");
-        setEmailDomain("@gmail.com");
+        setEmail("");
       } else {
         const errorText = await res.text();
         console.error("Email send error:", errorText);
@@ -453,7 +439,7 @@ function Contact() {
         something delightful.
       </p>
 
-      {/* Quick actions with icons + Gmail/mailto chooser */}
+      {/* Quick actions */}
       <div className="mt-5 flex flex-wrap gap-3">
         <a
           href="#"
@@ -505,48 +491,18 @@ function Contact() {
           className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
         />
 
-        {/* Email with domain dropdown */}
+        {/* Email - single full input */}
         <label className="block text-xs text-slate-400">
           Your Email
-          <div className="mt-1 flex gap-2">
-            <input
-              type="text"
-              inputMode="email"
-              placeholder="username"
-              required
-              value={emailLocal}
-              onChange={(e) => setEmailLocal(e.target.value)}
-              className="flex-1 p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
-            />
-            <select
-              value={emailDomain}
-              onChange={(e) => setEmailDomain(e.target.value)}
-              className="p-3 rounded-xl bg-slate-800/80 text-white"
-              aria-label="Email domain"
-            >
-              <option value="@gmail.com">@gmail.com</option>
-              <option value="@outlook.com">@outlook.com</option>
-              <option value="@hotmail.com">@hotmail.com</option>
-              <option value="@yahoo.com">@yahoo.com</option>
-              <option value="@icloud.com">@icloud.com</option>
-              <option value="@proton.me">@proton.me</option>
-              <option value="@aol.com">@aol.com</option>
-              <option value="@zoho.com">@zoho.com</option>
-              <option value="custom">Custom…</option>
-            </select>
-          </div>
-        </label>
-
-        {emailDomain === "custom" && (
           <input
-            type="text"
-            placeholder="yourdomain.com"
+            type="email"
+            placeholder="you@example.com"
             required
-            value={customDomain}
-            onChange={(e) => setCustomDomain(e.target.value)}
-            className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
           />
-        )}
+        </label>
 
         <textarea
           name="message"
@@ -555,6 +511,7 @@ function Contact() {
           rows={5}
           className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
         />
+
         {/* Honeypot */}
         <input
           type="text"
@@ -563,6 +520,7 @@ function Contact() {
           autoComplete="off"
           className="hidden"
         />
+
         <button
           type="submit"
           className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-xl text-white font-semibold"
