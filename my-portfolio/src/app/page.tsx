@@ -155,7 +155,7 @@ function Hero() {
             <IconLink href="https://www.linkedin.com/in/gyamjosherpa/" icon={<Linkedin size={16} />}>LinkedIn</IconLink>
             <IconLink href="mailto:gyamjosherpa1@gmail.com" icon={<Mail size={16} />}>Email</IconLink>
           </div>
-          <div className="mt-4 text-xs text-slate-400">Authorized to work in the U.S. — No visa required</div>
+          <div className="mt-4 text-m text-slate-400">Authorized to work in the U.S. — No visa required</div>
         </div>
 
         {/* Feature card with tilt */}
