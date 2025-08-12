@@ -11,9 +11,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function isValidEmail(v: unknown): v is string {
   return typeof v === "string" && EMAIL_RE.test(v);
 }
-
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
+}
+function clip(s: string, max = 5000) {
+  return s.length > max ? s.slice(0, max) + "…" : s;
 }
 
 // Simple GET so you can test in browser: /api/send-email
@@ -46,6 +48,7 @@ export async function POST(req: Request) {
 
     // Honeypot (bots fill hidden field)
     if (isNonEmptyString(website)) {
+      // Pretend success to avoid tipping off bots
       return NextResponse.json({ ok: true });
     }
 
@@ -67,44 +70,55 @@ export async function POST(req: Request) {
     const to = process.env.EMAIL_TO || "gyamjosherpa1@gmail.com";
     const from = process.env.EMAIL_FROM || "Portfolio <onboarding@resend.dev>";
 
-    // Compose email
-    const plain = `From: ${name} <${email}>\n\n${String(message).trim()}`;
+    // Compose email (clip to keep emails small/safe)
+    const safeName = clip(String(name).trim(), 256);
+    const safeEmail = String(email).trim();
+    const safeMsg = clip(String(message).trim(), 5000);
+
+    const plain = `From: ${safeName} <${safeEmail}>\n\n${safeMsg}`;
     const html = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6">
-        <p><strong>From:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
+        <p><strong>From:</strong> ${escapeHtml(safeName)} &lt;${escapeHtml(safeEmail)}&gt;</p>
         <p><strong>Message:</strong></p>
-        <p>${escapeHtml(String(message)).replace(/\n/g, "<br/>")}</p>
+        <p>${escapeHtml(safeMsg).replace(/\n/g, "<br/>")}</p>
       </div>
     `;
 
-    const result = await resend.emails.send({
+    // 🔧 Resend SDK returns { data, error } — use reply_to (snake_case)
+    const { data, error } = await resend.emails.send({
       from,
       to,
-      replyTo: String(email),
-      subject: `New message from ${name}`,
+      replyTo: safeEmail,
+      subject: `New message from ${safeName}`,
       text: plain,
       html,
     });
 
-    // Resend returns { id } on success; expose minimal info to client
-    if (!("id" in result) || !result.id) {
-      console.error("Resend send error:", result);
+    if (error) {
+      console.error("Resend error:", error);
+      // Surface a concise error to the client
+      return NextResponse.json(
+        { error: error.message || "Email provider error" },
+        { status: 502 }
+      );
+    }
+
+    if (!data?.id) {
+      console.error("Resend returned no id:", data);
       return NextResponse.json({ error: "Failed to send" }, { status: 502 });
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, id: data.id });
   } catch (err: unknown) {
-    // Log detailed error server-side; keep client message concise
     console.error("send-email route error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
 // --- helpers ---
-
 // Very small HTML escaper to prevent accidental HTML injection in email
 function escapeHtml(s: string) {
-  return s
+  return String(s)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
