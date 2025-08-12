@@ -155,7 +155,7 @@ function Hero() {
             <IconLink href="https://www.linkedin.com/in/gyamjosherpa/" icon={<Linkedin size={16} />}>LinkedIn</IconLink>
             <IconLink href="mailto:gyamjosherpa1@gmail.com" icon={<Mail size={16} />}>Email</IconLink>
           </div>
-          <div className="mt-4 text-m text-slate-400">Authorized to work in the U.S. — No visa required</div>
+          <div className="mt-4 text-md text-slate-400">Authorized to work in the U.S. — No visa required</div>
         </div>
 
         {/* Feature card with tilt */}
@@ -380,7 +380,9 @@ function Education() {
 import {FileText} from "lucide-react";
 
 function Contact() {
-  const [email, setEmail] = useState("");
+  const [emailLocal, setEmailLocal] = useState("");
+  const [emailDomain, setEmailDomain] = useState("@gmail.com");
+  const [customDomain, setCustomDomain] = useState("");
 
   function handleQuickEmailClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
@@ -398,12 +400,22 @@ function Contact() {
     }
   }
 
+  // normalize custom domain if chosen (strip leading @ and spaces)
+  const normalizedCustom = customDomain.replace(/^@+/, "").trim();
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    formData.set("email", email.trim());
+    // Assemble full email from local + selected domain
+    const local = emailLocal.trim();
+    const finalEmail =
+      emailDomain === "custom"
+        ? `${local}@${normalizedCustom}`
+        : `${local}${emailDomain}`;
+
+    formData.set("email", finalEmail);
     const data = Object.fromEntries(formData.entries());
 
     try {
@@ -416,7 +428,9 @@ function Contact() {
       if (res.ok) {
         alert("Thanks! Your message is on its way.");
         form.reset();
-        setEmail("");
+        setEmailLocal("");
+        setCustomDomain("");
+        setEmailDomain("@gmail.com");
       } else {
         const errorText = await res.text();
         console.error("Email send error:", errorText);
@@ -439,7 +453,7 @@ function Contact() {
         something delightful.
       </p>
 
-      {/* Quick actions */}
+      {/* Quick actions with icons + Gmail/mailto chooser */}
       <div className="mt-5 flex flex-wrap gap-3">
         <a
           href="#"
@@ -491,18 +505,48 @@ function Contact() {
           className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
         />
 
-        {/* Email - single full input */}
+        {/* Email with domain dropdown */}
         <label className="block text-xs text-slate-400">
           Your Email
-          <input
-            type="email"
-            placeholder="you@example.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
-          />
+          <div className="mt-1 flex gap-2">
+            <input
+              type="text"
+              inputMode="email"
+              placeholder="username"
+              required
+              value={emailLocal}
+              onChange={(e) => setEmailLocal(e.target.value)}
+              className="flex-1 p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
+            />
+            <select
+              value={emailDomain}
+              onChange={(e) => setEmailDomain(e.target.value)}
+              className="p-3 rounded-xl bg-slate-800/80 text-white"
+              aria-label="Email domain"
+            >
+              <option value="@gmail.com">@gmail.com</option>
+              <option value="@outlook.com">@outlook.com</option>
+              <option value="@hotmail.com">@hotmail.com</option>
+              <option value="@yahoo.com">@yahoo.com</option>
+              <option value="@icloud.com">@icloud.com</option>
+              <option value="@proton.me">@proton.me</option>
+              <option value="@aol.com">@aol.com</option>
+              <option value="@zoho.com">@zoho.com</option>
+              <option value="custom">Custom…</option>
+            </select>
+          </div>
         </label>
+
+        {emailDomain === "custom" && (
+          <input
+            type="text"
+            placeholder="yourdomain.com"
+            required
+            value={customDomain}
+            onChange={(e) => setCustomDomain(e.target.value)}
+            className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
+          />
+        )}
 
         <textarea
           name="message"
@@ -511,7 +555,6 @@ function Contact() {
           rows={5}
           className="w-full p-3 rounded-xl bg-slate-800/80 placeholder-slate-400 text-white"
         />
-
         {/* Honeypot */}
         <input
           type="text"
@@ -520,7 +563,6 @@ function Contact() {
           autoComplete="off"
           className="hidden"
         />
-
         <button
           type="submit"
           className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-xl text-white font-semibold"
