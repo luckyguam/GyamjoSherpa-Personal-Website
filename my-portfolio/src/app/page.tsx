@@ -17,6 +17,7 @@ import {
   X,
   CalendarDays,
   FileText,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -504,13 +505,13 @@ function Contact() {
         >
           <FileText size={16} /> Resume (PDF)
         </a>
+        <a href="tel:9295097249" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-400 px-4 py-2 text-sm text-white font-semibold hover:opacity-90"><Phone size={16} /> Call Me</a>
       </div>
-      <div className="mt-4 text-sm text-slate-400">Phone: 929-509-7249</div>
 
       {/* Contact form */}
       <form
         onSubmit={handleSubmit}
-        className="mt-8 space-y-4 max-w-lg bg-slate-900/60 p-6 rounded-xl shadow-lg"
+        className="mt-8 space-y-4 max-w-xl bg-slate-900/60 p-6 rounded-xl shadow-lg"
         noValidate
       >
         <h3 className="text-xl font-semibold mb-2">Send me a message</h3>
