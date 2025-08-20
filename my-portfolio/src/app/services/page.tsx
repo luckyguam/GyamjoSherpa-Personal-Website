@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Code2,
@@ -104,32 +105,35 @@ function Navbar() {
   return (
     <div className="sticky top-0 z-40 border-b border-white/10 supports-[backdrop-filter]:bg-slate-950/50 backdrop-blur">
       <div className="mx-auto max-w-screen-xl h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Logo + Name */}
-        <a
+        {/* Logo + Name (internal route => Link) */}
+        <Link
           href="/#top"
           className="font-semibold tracking-tight hover:opacity-90 flex items-center gap-2"
         >
-          <img
+          <Image
             src="/me.jpg"
             alt="Gyamjo Sherpa"
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full border border-white/20 object-cover"
+            priority
           />
           Gyamjo Sherpa
-        </a>
+        </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav (all internal => Link) */}
         <nav className="hidden md:flex items-center gap-6 text-sm">
-          <a className="navlink" href="/#experience">Experience</a>
-          <a className="navlink" href="/#projects">Projects</a>
-          <a className="navlink" href="/#skills">Skills</a>
-          <a className="navlink" href="/#education">Education</a>
-          <a className="navlink" href="/#contact">Contact</a>
-          <a className="navlink" href="/services">Services</a>
+          <Link className="navlink" href="/#experience">Experience</Link>
+          <Link className="navlink" href="/#projects">Projects</Link>
+          <Link className="navlink" href="/#skills">Skills</Link>
+          <Link className="navlink" href="/#education">Education</Link>
+          <Link className="navlink" href="/#contact">Contact</Link>
+          <Link className="navlink" href="/services">Services</Link>
         </nav>
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
-          {/* Book a call (desktop) */}
+          {/* Book a call (external => <a>) */}
           <a
             href={BOOKING_URL}
             target="_blank"
@@ -139,7 +143,7 @@ function Navbar() {
             <CalendarDays size={14} /> Book a call
           </a>
 
-          {/* Resume (desktop) */}
+          {/* Resume (static file => <a>) */}
           <a
             href="/resume.pdf"
             target="_blank"
@@ -154,6 +158,7 @@ function Navbar() {
             className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 p-2"
             aria-label="Toggle navigation"
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X size={18} /> : <Menu size={18} />}
@@ -163,19 +168,21 @@ function Navbar() {
 
       {/* Mobile Menu */}
       <motion.div
+        id="mobile-nav"
+        role="navigation"
         initial={false}
         animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
-        className="md:hidden overflow-hidden border-t border-white/10"
+        className="md:hidden overflow-hidden border-t border-white/10 bg-slate-950/90 backdrop-blur"
       >
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3 grid gap-3 text-sm">
-          <a className="navlink" href="/#experience" onClick={() => setOpen(false)}>Experience</a>
-          <a className="navlink" href="/#projects" onClick={() => setOpen(false)}>Projects</a>
-          <a className="navlink" href="/#skills" onClick={() => setOpen(false)}>Skills</a>
-          <a className="navlink" href="/#education" onClick={() => setOpen(false)}>Education</a>
-          <a className="navlink" href="/#contact" onClick={() => setOpen(false)}>Contact</a>
-          <a className="navlink" href="/services" onClick={() => setOpen(false)}>Services</a>
+          <Link className="navlink" href="/#experience" onClick={() => setOpen(false)}>Experience</Link>
+          <Link className="navlink" href="/#projects" onClick={() => setOpen(false)}>Projects</Link>
+          <Link className="navlink" href="/#skills" onClick={() => setOpen(false)}>Skills</Link>
+          <Link className="navlink" href="/#education" onClick={() => setOpen(false)}>Education</Link>
+          <Link className="navlink" href="/#contact" onClick={() => setOpen(false)}>Contact</Link>
+          <Link className="navlink" href="/services" onClick={() => setOpen(false)}>Services</Link>
 
-          {/* Book a call (mobile) */}
+          {/* Book a call (external) */}
           <a
             href={BOOKING_URL}
             target="_blank"
@@ -186,7 +193,7 @@ function Navbar() {
             <CalendarDays size={14} /> Book a call
           </a>
 
-          {/* Resume (mobile) */}
+          {/* Resume (static file) */}
           <a
             href="/resume.pdf"
             target="_blank"
@@ -219,13 +226,13 @@ function Footer() {
 /* --------------------------- AMBIENT ELEMENTS --------------------------- */
 function BackToTop() {
   return (
-    <a
+    <Link
       href="/#top"
       className="fixed bottom-5 right-5 inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-xs backdrop-blur hover:bg-white/10"
       aria-label="Back to top"
     >
       ↑ Top
-    </a>
+    </Link>
   );
 }
 
@@ -251,7 +258,7 @@ function AmbientBlobs() {
 /* ------------------------------ PAGE ------------------------------ */
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
+    <div id="top" className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
       <Navbar />
 
       {/* Header */}
