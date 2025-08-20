@@ -400,7 +400,7 @@ function Education() {
       </div>
       <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
         <div className="flex flex-wrap items-baseline gap-3">
-          <div className="text-base sm:text-lg font-semibold">CUNY Queens College — B.S. in Computer Science</div>
+          <div className="text-base sm:text-lg font-semibold">CUNY Queens College — Bachelor's in Computer Science</div>
           <div className="text-xs sm:text-sm text-slate-400">Graduated Jul 2025 • Queens, NY</div>
         </div>
       </div>
