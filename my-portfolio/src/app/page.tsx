@@ -14,7 +14,7 @@ import {
   GraduationCap,
   Wrench,
   Menu,
-  X
+  X, CalendarDays
 } from "lucide-react";
 
 export default function Page() {
@@ -67,18 +67,32 @@ function Navbar() {
           <a className="navlink" href="#skills">Skills</a>
           <a className="navlink" href="#education">Education</a>
           <a className="navlink" href="#contact">Contact</a>
+          <a className="navlink" href="/services">Services</a>
         </nav>
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
+          {/* Book a call (desktop) */}
           <a
-            href="/resume.pdf"
+            href="https://calendar.app.google/WAKPhUeznKAU7Sxq7"
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white text-slate-900 px-3 py-1.5 text-xs font-medium hover:opacity-90"
           >
+            <CalendarDays size={14} /> Book a call
+          </a>
+
+          {/* Resume (desktop) */}
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white/90 text-slate-900 px-3 py-1.5 text-xs font-medium hover:opacity-100"
+          >
             <Download size={14} /> Resume
           </a>
+
+          {/* Mobile menu toggle */}
           <button
             className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 p-2"
             aria-label="Toggle navigation"
@@ -102,6 +116,20 @@ function Navbar() {
           <a className="navlink" href="#skills" onClick={() => setOpen(false)}>Skills</a>
           <a className="navlink" href="#education" onClick={() => setOpen(false)}>Education</a>
           <a className="navlink" href="#contact" onClick={() => setOpen(false)}>Contact</a>
+          <a className="navlink" href="/services" onClick={() => setOpen(false)}>Services</a>
+
+          {/* Book a call (mobile) */}
+          <a
+            href="https://calendar.app.google/WAKPhUeznKAU7Sxq7"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-white text-slate-900 w-max px-3 py-1.5 text-xs font-medium"
+            onClick={() => setOpen(false)}
+          >
+            <CalendarDays size={14} /> Book a call
+          </a>
+
+          {/* Resume (mobile) */}
           <a
             href="/resume.pdf"
             target="_blank"
@@ -118,8 +146,6 @@ function Navbar() {
     </div>
   );
 }
-
-
 /* ------------------------------- HERO ------------------------------- */
 function Hero() {
   const reduce = useReducedMotion();
