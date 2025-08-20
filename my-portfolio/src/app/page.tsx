@@ -46,14 +46,13 @@ function Navbar() {
   return (
     <div className="sticky top-0 z-40 border-b border-white/10 supports-[backdrop-filter]:bg-slate-950/50 backdrop-blur">
       <div className="mx-auto max-w-screen-xl h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        
         {/* Logo + Name */}
         <a
           href="#top"
           className="font-semibold tracking-tight hover:opacity-90 flex items-center gap-2"
         >
           <img
-            src="/me.jpg" // <-- place your image in public/me.jpg
+            src="/me.jpg"
             alt="Gyamjo Sherpa"
             className="w-8 h-8 rounded-full border border-white/20 object-cover"
           />
@@ -97,6 +96,7 @@ function Navbar() {
             className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 p-2"
             aria-label="Toggle navigation"
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X size={18} /> : <Menu size={18} />}
@@ -106,9 +106,11 @@ function Navbar() {
 
       {/* Mobile Menu */}
       <motion.div
+        id="mobile-nav"
+        role="navigation"
         initial={false}
         animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
-        className="md:hidden overflow-hidden border-t border-white/10"
+        className="md:hidden overflow-hidden border-t border-white/10 bg-slate-950/90 backdrop-blur"
       >
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3 grid gap-3 text-sm">
           <a className="navlink" href="#experience" onClick={() => setOpen(false)}>Experience</a>
@@ -116,6 +118,7 @@ function Navbar() {
           <a className="navlink" href="#skills" onClick={() => setOpen(false)}>Skills</a>
           <a className="navlink" href="#education" onClick={() => setOpen(false)}>Education</a>
           <a className="navlink" href="#contact" onClick={() => setOpen(false)}>Contact</a>
+          {/* Go to a separate page for Services */}
           <a className="navlink" href="/services" onClick={() => setOpen(false)}>Services</a>
 
           {/* Book a call (mobile) */}
@@ -146,6 +149,7 @@ function Navbar() {
     </div>
   );
 }
+
 /* ------------------------------- HERO ------------------------------- */
 function Hero() {
   const reduce = useReducedMotion();
