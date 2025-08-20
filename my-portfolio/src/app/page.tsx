@@ -83,7 +83,7 @@ function Navbar() {
 
           {/* Resume (desktop) */}
           <a
-            href="/resume.pdf"
+            href="/Resume.pdf"
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white/90 text-slate-900 px-3 py-1.5 text-xs font-medium hover:opacity-100"
