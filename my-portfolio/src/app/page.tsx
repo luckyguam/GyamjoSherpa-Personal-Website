@@ -14,8 +14,12 @@ import {
   GraduationCap,
   Wrench,
   Menu,
-  X, CalendarDays
+  X,
+  CalendarDays,
+  FileText,
 } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Page() {
   return (
@@ -46,15 +50,18 @@ function Navbar() {
   return (
     <div className="sticky top-0 z-40 border-b border-white/10 supports-[backdrop-filter]:bg-slate-950/50 backdrop-blur">
       <div className="mx-auto max-w-screen-xl h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Logo + Name */}
+        {/* Logo + Name (same-page hash uses <a>) */}
         <a
           href="#top"
           className="font-semibold tracking-tight hover:opacity-90 flex items-center gap-2"
         >
-          <img
+          <Image
             src="/me.jpg"
             alt="Gyamjo Sherpa"
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full border border-white/20 object-cover"
+            priority
           />
           Gyamjo Sherpa
         </a>
@@ -66,12 +73,13 @@ function Navbar() {
           <a className="navlink" href="#skills">Skills</a>
           <a className="navlink" href="#education">Education</a>
           <a className="navlink" href="#contact">Contact</a>
-          <a className="navlink" href="/services">Services</a>
+          {/* Internal route => use Link to satisfy @next/next/no-html-link-for-pages */}
+          <Link className="navlink" href="/services">Services</Link>
         </nav>
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
-          {/* Book a call (desktop) */}
+          {/* Book a call (desktop) - external link stays <a> */}
           <a
             href="https://calendar.app.google/WAKPhUeznKAU7Sxq7"
             target="_blank"
@@ -81,9 +89,9 @@ function Navbar() {
             <CalendarDays size={14} /> Book a call
           </a>
 
-          {/* Resume (desktop) */}
+          {/* Resume (desktop) - static file stays <a> */}
           <a
-            href="/Resume.pdf"
+            href="/resume.pdf"
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white/90 text-slate-900 px-3 py-1.5 text-xs font-medium hover:opacity-100"
@@ -118,8 +126,8 @@ function Navbar() {
           <a className="navlink" href="#skills" onClick={() => setOpen(false)}>Skills</a>
           <a className="navlink" href="#education" onClick={() => setOpen(false)}>Education</a>
           <a className="navlink" href="#contact" onClick={() => setOpen(false)}>Contact</a>
-          {/* Go to a separate page for Services */}
-          <a className="navlink" href="/services" onClick={() => setOpen(false)}>Services</a>
+          {/* Internal route => Link */}
+          <Link className="navlink" href="/services" onClick={() => setOpen(false)}>Services</Link>
 
           {/* Book a call (mobile) */}
           <a
@@ -235,6 +243,7 @@ function IconLink({ href, children, icon }: { href: string; children: React.Reac
     </a>
   );
 }
+
 /* ---------------------------- EXPERIENCE ---------------------------- */
 function Experience() {
   return (
@@ -309,43 +318,38 @@ const PROJECTS = [
     title: "Inspirational Calendar",
     summary: "Node.js app integrating Google Calendar (OAuth 2.0) + a quotes API to show daily inspiration alongside events.",
     tags: ["Node.js", "OAuth 2.0", "API"],
+    repo: undefined,
   },
 ] as const;
 
 function Projects() {
+  const reduce = useReducedMotion();
   return (
     <section id="projects" className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
       <h2 className="text-2xl md:text-3xl font-bold mb-6">Featured Projects</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))] gap-5">
         {PROJECTS.map((p) => (
-          <ProjectCard key={p.title} p={p} />
+          <motion.div key={p.title} whileHover={reduce ? undefined : { y: -6, rotate: -0.3 }} transition={{ type: "spring", stiffness: 200, damping: 16 }}>
+            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-4 h-full flex flex-col">
+              <h3 className="text-lg font-semibold">{p.title}</h3>
+              <p className="mt-2 text-slate-300 flex-1 text-sm sm:text-base">{p.summary}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {p.tags.map((t) => (
+                  <span key={t} className="text-xs rounded-xl bg-white/10 px-2 py-1">{t}</span>
+                ))}
+              </div>
+              <div className="mt-4">
+                {p.repo && (
+                  <a href={p.repo} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm rounded-xl border border-white/20 px-3 py-1.5 hover:bg-white/10">
+                    <Github size={16} /> Repo
+                  </a>
+                )}
+              </div>
+            </div>
+          </motion.div>
         ))}
       </div>
     </section>
-  );
-}
-
-function ProjectCard({ p }: { p: { title: string; summary: string; tags: readonly string[]; repo?: string } }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div whileHover={reduce ? undefined : { y: -6, rotate: -0.3 }} transition={{ type: "spring", stiffness: 200, damping: 16 }}>
-      <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-4 h-full flex flex-col">
-        <h3 className="text-lg font-semibold">{p.title}</h3>
-        <p className="mt-2 text-slate-300 flex-1 text-sm sm:text-base">{p.summary}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {p.tags.map((t) => (
-            <span key={t} className="text-xs rounded-xl bg-white/10 px-2 py-1">{t}</span>
-          ))}
-        </div>
-        <div className="mt-4">
-          {p.repo && (
-            <a href={p.repo} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm rounded-xl border border-white/20 px-3 py-1.5 hover:bg-white/10">
-              <Github size={16} /> Repo
-            </a>
-          )}
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -367,7 +371,7 @@ function Skills() {
         <SkillGroup title="Developer Tools" items={TOOLS} />
       </div>
       <div className="mt-6 text-slate-300 text-sm">
-        <b>Non‑technical:</b> Communication & Presentation • Teamwork & Leadership • Multi‑tasking & Prioritization • Problem Solving
+        <b>Non-technical:</b> Communication & Presentation • Teamwork & Leadership • Multi-tasking & Prioritization • Problem Solving
       </div>
     </section>
   );
@@ -405,10 +409,6 @@ function Education() {
 }
 
 /* ------------------------------ CONTACT ----------------------------- */
-
-
-import {FileText} from "lucide-react";
-
 function Contact() {
   const [email, setEmail] = useState("");
 
@@ -567,13 +567,6 @@ function Contact() {
     </section>
   );
 }
-
-
-
-
-
-
-
 
 /* ------------------------------ FOOTER ------------------------------ */
 function Footer() {
